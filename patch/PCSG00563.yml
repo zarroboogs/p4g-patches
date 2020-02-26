@@ -1,0 +1,61 @@
+
+p4g_IntroSkip: &p4g_IntroSkip
+  - [ be16, 0x81243e94, 0x00bf     ] # nop
+
+p4g_ModSupport: &p4g_ModSupport
+  - [ be16, 0x810072c0, 0x89e0     ] # b          0x810073d6   # skip over patch
+  
+  # data.cpk
+  
+  - [ be32, 0x810072c4, 0x4af60650 ] # movw       r0,#0xad06
+  - [ be32, 0x810072c8, 0xc0f20c00 ] # movt       r0,#0xc
+  - [ be32, 0x810072cc, 0x5ff48021 ] # movs.w     r1,#0x40000
+  - [ be32, 0x810072d0, 0xf6f205f9 ] # bl         0x812fd4de
+  - [ be16, 0x810072d4, 0x2968     ] # ldr        r1,[r5,#0x0]
+  - [ be16, 0x810072d6, 0x031c     ] # add        r3,r0,#0x0
+  - [ be32, 0x810072d8, 0x4af60650 ] # movw       r0,#0xad06
+  - [ be32, 0x810072dc, 0xc0f20c00 ] # movt       r0,#0xc
+  - [ be32, 0x810072e0, 0xcde90004 ] # strd       r0,r4,[sp,#0x0]
+  - [ be32, 0x810072e4, 0x4ef6a852 ] # movw       r2,#0xeda8
+  - [ be16, 0x810072e8, 0x081c     ] # add        r0,r1,#0x0
+  - [ be32, 0x810072ea, 0xc8f23d12 ] # movt       r2,#0x813d   # "app0:/data/data.cpk"
+  - [ be16, 0x810072ee, 0x0021     ] # mov        r1,#0x0
+  - [ be32, 0x810072f0, 0x5df3e3fc ] # bl         0x81364cba   # bind cpk
+  - [ be16, 0x810072f4, 0x2068     ] # ldr        r0,[r4,#0x0]
+  - [ be16, 0x810072f6, 0x02a9     ] # add        r1,sp,#0x8
+  - [ be32, 0x810072f8, 0x5ef3c5fa ] # bl         0x81365886
+  - [ be16, 0x810072fc, 0x0298     ] # ldr        r0,[sp,#0x8]
+  - [ be16, 0x810072fe, 0x0228     ] # cmp        r0,#0x2
+  - [ be16, 0x81007300, 0x16d0     ] # beq        0x81007330
+  - [ be16, 0x81007302, 0x0628     ] # cmp        r0,#0x6
+  - [ be16, 0x81007304, 0x0fd1     ] # bne        0x81007326
+  - [ be16, 0x81007306, 0x2068     ] # ldr        r0,[r4,#0x0]
+  - [ be32, 0x81007308, 0x5ef353f9 ] # bl         0x813655b2
+  - [ be32, 0x8100730c, 0x4ef6bc50 ] # movw       r0,#0xedbc
+  - [ be32, 0x81007310, 0x4ef67851 ] # movw       r1,#0xed78
+  - [ be32, 0x81007314, 0xc8f23d10 ] # movt       r0,#0x813d   # "CPK BIND ERROR"
+  - [ be32, 0x81007318, 0xc8f23d11 ] # movt       r1,#0x813d   # "d:/xrd654v/sdk/src/io/sdkFile.c"
+  - [ be32, 0x8100731c, 0x40f2ce12 ] # movw       r2,#0x1ce
+  - [ be32, 0x81007320, 0xb2f288fc ] # bl         0x812b9c34
+  - [ be16, 0x81007324, 0x04e0     ] # b          0x81007330
+  - [ be32, 0x81007326, 0x42f21070 ] # movw       r0,#0x2710
+  - [ be32, 0x8100732a, 0x99f3c0ea ] # blx        0x813a08ac   # sleep
+  - [ be16, 0x8100732e, 0xe1e7     ] # b          0x810072f4
+  - [ be16, 0x81007330, 0x29b0     ] # add        sp,#0xa4
+  - [ be16, 0x81007332, 0xf0bd     ] # pop        { r4, r5, r6, r7, pc }   # return
+  
+  # mod.cpk
+  
+  - [ be32, 0x812fab06, 0x4ef6dc52 ] # movw       r2,#0xeddc   # data.cpk -> mod.cpk
+  
+  - [ be32, 0x812fab52, 0x0cf5b7bb ] # b.w        0x810072c4   # branch to patch
+  
+  - [ be32, 0x813deddc, 0x61707030 ] # ds         "app0://data//mod.cpk"
+  - [ be32, 0x813dede0, 0x3a2f2f64 ]
+  - [ be32, 0x813dede4, 0x6174612f ]
+  - [ be32, 0x813dede8, 0x2f6d6f64 ]
+  - [ be32, 0x813dedec, 0x2e63706b ]
+
+2d15e8f4eec13c11f37ea2f450df41026a239c43:
+  - [ load, p4g_IntroSkip ]
+  - [ load, p4g_ModSupport ]
