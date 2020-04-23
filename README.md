@@ -45,7 +45,7 @@ heeboot eboot.elf ./patch/<title_id>.yml eboot.elf-out -n <patch1> <patch2> <...
 For example, to apply `p4g_IntroSkip` and `p4g_ModSupport` to `PCSE00120` (P4G US):
 
 ```txt
-heeboot eboot.elf ./patch/PCSE01275.yml eboot.elf-out -n p4g_IntroSkip p4g_ModSupport
+heeboot eboot.elf ./patch/PCSE00120.yml eboot.elf-out -n p4g_IntroSkip p4g_ModSupport
 ```
 
 ### Using [xdelta][3]
