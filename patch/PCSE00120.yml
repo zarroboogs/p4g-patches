@@ -1,7 +1,11 @@
 
+
+# skips intro logos and movie
 p4g_IntroSkip: &p4g_IntroSkip
   - [ be16, 0x81243c40, 0x00bf     ] # nop
 
+
+# enables file replacement using a mod.cpk file in the game's data dir
 p4g_ModSupport: &p4g_ModSupport
   - [ be16, 0x810072cc, 0x89e0     ] # b          0x810073e2   # skip over patch
   
@@ -56,6 +60,133 @@ p4g_ModSupport: &p4g_ModSupport
   - [ be32, 0x813bb368, 0x2f6d6f64 ]
   - [ be32, 0x813bb36c, 0x2e63706b ]
 
-c667ae67716d29cd9322661851a99d1d72558130:
+
+# enables file replacement using several cpk files in the game's data dir
+# cpk files (listed by priority, highest to lowest): m0 m1 m2 m3 data
+p4g_ModSupportMulti: &p4g_ModSupportMulti
+  - [ be16, 0x810072cc, 0x89e0     ] # b            0x810073e2 # skip over patch
+  
+  # cpk load patch
+  
+  - [ be32, 0x810072d0, 0x4bf2fc28 ] # movw         r8,#0xb2fc
+  - [ be32, 0x810072d4, 0xc8f23b18 ] # movt         r8,#0x813b
+  - [ be32, 0x810072d8, 0x4ff00009 ] # mov.w        r9,#0x0
+  - [ be32, 0x810072dc, 0x0df1a40a ] # add.w        r10,sp,#0xa4
+  - [ be32, 0x810072e0, 0x4bf22831 ] # movw         r1,#0xb328
+  - [ be32, 0x810072e4, 0xc8f23b11 ] # movt         r1,#0x813b                  = "app0:/data/%s.cpk"
+  - [ be16, 0x810072e8, 0x4246     ] # mov          r2,r8                       = "m1"
+  - [ be16, 0x810072ea, 0x5046     ] # mov          r0,r10
+  - [ be32, 0x810072ec, 0x76f344ef ] # blx          sprintf
+  - [ be32, 0x810072f0, 0x4af60650 ] # movw         r0,#0xad06
+  - [ be32, 0x810072f4, 0xc0f20c00 ] # movt         r0,#0xc
+  - [ be32, 0x810072f8, 0x5ff48021 ] # movs.w       r1,#0x40000
+  - [ be32, 0x810072fc, 0xf5f2cffd ] # bl           FUN_812fce9e
+  - [ be16, 0x81007300, 0x2968     ] # ldr          r1,[r5,#0x0]
+  - [ be16, 0x81007302, 0x031c     ] # add          r3,r0,#0x0
+  - [ be32, 0x81007304, 0x4af60650 ] # movw         r0,#0xad06
+  - [ be32, 0x81007308, 0xc0f20c00 ] # movt         r0,#0xc
+  - [ be32, 0x8100730c, 0xcde90004 ] # strd         r0,r4,[sp,#0x0]
+  - [ be16, 0x81007310, 0x081c     ] # add          r0,r1,#0x0
+  - [ be16, 0x81007312, 0x0021     ] # mov          r1,#0x0
+  - [ be16, 0x81007314, 0x5246     ] # mov          r2,r10
+  - [ be32, 0x81007316, 0x65f3fef9 ] # bl           __criFsBinder_BindCpk
+  - [ be16, 0x8100731a, 0x2068     ] # ldr          r0,[r4,#0x0]
+  - [ be16, 0x8100731c, 0x02a9     ] # add          r1,sp,#0x8
+  - [ be32, 0x8100731e, 0x65f3e0ff ] # bl           FUN_8136d2e2
+  - [ be16, 0x81007322, 0x0298     ] # ldr          r0,[sp,#local_8]
+  - [ be16, 0x81007324, 0x0228     ] # cmp          r0,#0x2
+  - [ be16, 0x81007326, 0x16d0     ] # beq          LAB_81007356
+  - [ be16, 0x81007328, 0x0628     ] # cmp          r0,#0x6
+  - [ be16, 0x8100732a, 0x0fd1     ] # bne          LAB_8100734c
+  - [ be16, 0x8100732c, 0x2068     ] # ldr          r0,[r4,#0x0]
+  - [ be32, 0x8100732e, 0x65f36efe ] # bl           FUN_8136d00e
+  - [ be32, 0x81007332, 0x4bf23c30 ] # movw         r0,#0xb33c
+  - [ be32, 0x81007336, 0xc8f23b10 ] # movt         r0,#0x813b                  = "CPK BIND ERROR"
+  - [ be32, 0x8100733a, 0x4bf2f821 ] # movw         r1,#0xb2f8
+  - [ be32, 0x8100733e, 0xc8f23b11 ] # movt         r1,#0x813b                  = "d:/"
+  - [ be32, 0x81007342, 0x40f2ce12 ] # movw         r2,#0x1ce
+  - [ be32, 0x81007346, 0xb2f255f9 ] # bl           FUN_812b95f4
+  - [ be16, 0x8100734a, 0x04e0     ] # b            LAB_81007356
+  - [ be32, 0x8100734c, 0x42f21070 ] # movw         r0,#0x2710
+  - [ be32, 0x81007350, 0x77f3f2e9 ] # blx          sceKernelDelayThread
+  - [ be16, 0x81007354, 0xe1e7     ] # b            LAB_8100731a
+  - [ be32, 0x81007356, 0x09f10109 ] # add.w        r9,r9,#0x1
+  - [ be32, 0x8100735a, 0x08f10408 ] # add.w        r8,r8,#0x4
+  - [ be32, 0x8100735e, 0xb9f1050f ] # cmp.w        r9,#0x5
+  - [ be16, 0x81007362, 0xbbdb     ] # blt          LAB_810072dc
+  - [ be16, 0x81007364, 0x69b0     ] # add          sp,#0x1a4
+  - [ be32, 0x81007366, 0xbde8f087 ] # pop.w        { r4, r5, r6, r7, r8, r9, r10, pc }
+  - [ be16, 0x8100736a, 0x00bf     ] # nop
+  
+  # push fix patch
+  
+  - [ be16, 0x8100736c, 0xe9b0     ] # sub          sp,#0x1a4
+  - [ be32, 0x8100736e, 0x48f6d410 ] # movw         r0,#0x89d4
+  - [ be32, 0x81007372, 0xf2f2dbbf ] # b.w          LAB_812fa32c
+  
+  # branch to push fix patch
+  
+  - [ be32, 0x812fa324, 0x2de9f047 ] # push         { r4, r5, r6, r7, r8, r9, r10, lr  }
+  - [ be32, 0x812fa328, 0x0df520b8 ] # b.w          LAB_8100736c
+  
+  # branch to cpk load patch
+  
+  - [ be32, 0x812fa4a6, 0x0cf513bf ] # b.w          LAB_810072d0
+  
+  # cpk files
+  
+  - [ byte, 0x813bb2fb, 0x00 ]
+  - [ be32, 0x813bb2fc, 0x6d300000 ] # ds           "m0"
+  - [ be32, 0x813bb300, 0x6d310000 ] # ds           "m1"
+  - [ be32, 0x813bb304, 0x6d320000 ] # ds           "m2"
+  - [ be32, 0x813bb308, 0x6d330000 ] # ds           "m3"
+  - [ be32, 0x813bb30c, 0x64617461 ] # ds           "data"
+  - [ be32, 0x813bb310, 0x00000000 ]
+  
+  - [ be32, 0x813bb328, 0x61707030 ] # ds           "app0:/data/%s.cpk"
+  - [ be32, 0x813bb32c, 0x3a2f6461 ]
+  - [ be32, 0x813bb330, 0x74612f25 ]
+  - [ be32, 0x813bb334, 0x732e6370 ]
+  - [ be32, 0x813bb338, 0x6b000000 ]
+
+
+# any catch will be a perfect one
+# no need to wait for annoying [!] cue
+p4g_EasyBugCatching: &p4g_EasyBugCatching
+  - [ be32, 0x8129ca1e, 0x4ff00006 ] # mov.w      r6,#0x0
+  - [ be16, 0x8129ca22, 0x0d0e     ] # b          LAB_8129ca40
+
+
+# can always fast reel (triangle) even without the prompt
+p4g_EasyFishingV1: &p4g_EasyFishingV1
+  - [ be16, 0x811edb1e, 0x00bf     ] # nop
+  - [ be16, 0x811edb42, 0x00bf     ] # nop
+
+
+# can always fast reel (triangle) after reel (circle in blue area)
+# closer to actual game mechanic
+p4g_EasyFishingV2: &p4g_EasyFishingV2
+  - [ be16, 0x811ed70e, 0x03e0     ] # b          LAB_811ed718
+  - [ be16, 0x811ed71c, 0x00bf     ] # nop
+  - [ be16, 0x811ed730, 0x00bf     ] # nop
+
+
+# fish will be auto-reeled in without any input
+p4g_EasyFishingV3: &p4g_EasyFishingV3
+  - [ be32, 0x811edb1a, 0x50f48060 ] # orrs       r0,r0,#0x400
+
+
+c667ae67716d29cd9322661851a99d1d72558130: # PCSE00120 01.00
   - [ load, p4g_IntroSkip ]
+  
+  # use only one of these
   - [ load, p4g_ModSupport ]
+  #- [ load, p4g_ModSupportMulti ]
+  
+  #- [ load, p4g_EasyBugCatching ]
+  
+  # use only one of these, preferably V1
+  #- [ load, p4g_EasyFishingV1 ]
+  #- [ load, p4g_EasyFishingV2 ]
+  #- [ load, p4g_EasyFishingV3 ]
+
