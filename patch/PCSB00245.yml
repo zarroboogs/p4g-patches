@@ -1,7 +1,11 @@
 
+
+# skips intro logos and movie
 p4g_IntroSkip: &p4g_IntroSkip
   - [ be16, 0x81243c40, 0x00bf     ] # nop
 
+
+# enables file replacement using a mod.cpk file in the game's data dir
 p4g_ModSupport: &p4g_ModSupport
   - [ be16, 0x810072cc, 0x89e0     ] # b          0x810073e2   # skip over patch
   
@@ -56,6 +60,8 @@ p4g_ModSupport: &p4g_ModSupport
   - [ be32, 0x813bb388, 0x2f6d6f64 ]
   - [ be32, 0x813bb38c, 0x2e63706b ]
 
-140f0ca176e94c7b45ab0847ca421a132ff26bd4:
+
+140f0ca176e94c7b45ab0847ca421a132ff26bd4: # PCSB00245 01.00
   - [ load, p4g_IntroSkip ]
   - [ load, p4g_ModSupport ]
+
